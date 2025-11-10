@@ -20,10 +20,10 @@ button.addEventListener('click', function() {
             const dateMinusFive = new Date(gameDate);
             dateMinusFive.setMinutes(dateMinusFive.getMinutes() - 5);
             const newDateMinusFiveString = dateMinusFive.toISOString();
-
+            if (trainerNamespace == null || trainerCluster == null)
             // Мега адейт, теперь пространства сам подтягивает
-            chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=${trainerCluster}&ns=${trainerNamespace}`});
-            
+            chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}`});
+            else chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=${trainerCluster}&ns=${trainerNamespace}`});
         });
     });
 
@@ -183,15 +183,15 @@ button7.addEventListener('click', function() {
                     //Регулярка для TrainerNamespace
                     const regexForNamespace = /"TrainerNamespace".*value<\/span>=<span class="hljs-string">"(.*)"/;
                     const matchNamespace = htmlContent.match(regexForNamespace);
-                    const trainerNamespace = matchNamespace[1]
-                      //Регулярка для TrainerCluster
+                    let trainerNamespace = matchNamespace ? matchNamespace[1] : null;
+                    //Регулярка для TrainerCluster
                     const regexForCluser = /"TrainerCluster".*value<\/span>=<span class="hljs-string">"(.*)"/;
                     const matchCluster = htmlContent.match(regexForCluser);
-                    const trainerCluster = matchCluster[1]
+                    let trainerCluster = matchCluster ? matchCluster[1] : null;
                     console.log(gameDate);
                     console.log(openTrainerDate);
                     console.log(dateOpenTable);
-                    console.log(trainerCluster)
+                    console.log(trainerNamespace)
                     return [gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate, trainerNamespace, trainerCluster];
                 }
             }, (results) => {
