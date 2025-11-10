@@ -7,9 +7,10 @@ const button5 = document.getElementById('grabBtn5');
 const button6 = document.getElementById('grabBtn6');
 const button7 = document.getElementById('grabBtn7');
 
+
 //Кнопка для Headless
 button.addEventListener('click', function() {
-    extractUrlParams(([gameId, accId, gameDate, brainServer]) => {
+    extractUrlParams(([gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate, trainerNamespace, trainerCluster]) => {
             const accIdnumber = Number(accId);
 
             const datePlusFive = new Date(gameDate);
@@ -20,24 +21,9 @@ button.addEventListener('click', function() {
             dateMinusFive.setMinutes(dateMinusFive.getMinutes() - 5);
             const newDateMinusFiveString = dateMinusFive.toISOString();
 
-            // Пример использования массива: создание новой вкладки с изменённым URL
-            // JackPoker
-            if ((accIdnumber > 242000000 && accIdnumber < 242003691) || (accIdnumber > 242004560 && accIdnumber < 242999999))
-                chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=selectel-ru-9-jp&ns=jackpoker-trainer-prod2`});
-            // JackPokerTest
-            else if (accIdnumber >= 242003691 && accIdnumber <= 242004560)
-                chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}`});
-            // ClubGG
-            else if (accIdnumber > 235000000 && accIdnumber < 235999999)
-                chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=aws-eu-central-1-eco&ns=eco-clubgg-prod`});
-            // PokerMaster (HHPoker)
-            else if (accIdnumber > 118000000 && accIdnumber < 118999999)
-                chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=aws-ap-southeast-1-eco&ns=eco-hh-prod`});
-            // JackPokerClub
-            else if (accIdnumber > 296000000 && accIdnumber < 296999999)
-                chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=aws-ap-southeast-1-eco&ns=shinji-trainer-prod`});
-            else 
-                chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}`});
+            // Мега адейт, теперь пространства сам подтягивает
+            chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=${trainerCluster}&ns=${trainerNamespace}`});
+            
         });
     });
 
@@ -56,7 +42,7 @@ button2.addEventListener('click', function() {
                 const newDateMinusFiveString = dateMinusFive.toISOString();
 
                 // Пример использования массива: создание новой вкладки с изменённым URL
-                    chrome.tabs.create({url: `https://loggia.ecoinfra.io/?az=selectel-ru-2-hint&ns=hint-nzt-trainer-prod&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&text=${gameId}`});
+                    chrome.tabs.create({url: `https://loggia.ecoinfra.io/?az=selectel-ru-7&ns=hint-nzt-neotrainer-prod~hint-nzt-neotrainer-test&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&text=${gameId}`});
                
                });
         });
@@ -134,11 +120,11 @@ button6.addEventListener('click', function() {
 
                 const accIdnumber = Number(accId);
                 
-                const datePlusFive = new Date(openTrainerDate);
-                datePlusFive.setMinutes(datePlusFive.getMinutes() + 120);
+                const datePlusFive = new Date(gameDate);
+                datePlusFive.setMinutes(datePlusFive.getMinutes() + 60);
                 const newDatePlusFiveString = datePlusFive.toISOString();
                 
-                const dateMinusFive = new Date(openTrainerDate);
+                const dateMinusFive = new Date(gameDate);
                 dateMinusFive.setMinutes(dateMinusFive.getMinutes() - 5);
                 const newDateMinusFiveString = dateMinusFive.toISOString();
 
@@ -158,11 +144,11 @@ button7.addEventListener('click', function() {
 
                 const accIdnumber = Number(accId);
                 
-                const datePlusFive = new Date(openTrainerDate);
-                datePlusFive.setMinutes(datePlusFive.getMinutes() + 120);
+                const datePlusFive = new Date(gameDate);
+                datePlusFive.setMinutes(datePlusFive.getMinutes() + 60);
                 const newDatePlusFiveString = datePlusFive.toISOString();
                 
-                const dateMinusFive = new Date(openTrainerDate);
+                const dateMinusFive = new Date(gameDate);
                 dateMinusFive.setMinutes(dateMinusFive.getMinutes() - 5);
                 const newDateMinusFiveString = dateMinusFive.toISOString();
 
@@ -193,10 +179,20 @@ button7.addEventListener('click', function() {
                     const brainServer = parsedUrl.searchParams.get('serverCode');
                     const dateOpenTable = parsedUrl.searchParams.get('openTableDate');
                     const openTrainerDate = parsedUrl.searchParams.get('openTrainerDate');
+                    const htmlContent = document.documentElement.outerHTML;
+                    //Регулярка для TrainerNamespace
+                    const regexForNamespace = /"TrainerNamespace".*value<\/span>=<span class="hljs-string">"(.*)"/;
+                    const matchNamespace = htmlContent.match(regexForNamespace);
+                    const trainerNamespace = matchNamespace[1]
+                      //Регулярка для TrainerCluster
+                    const regexForCluser = /"TrainerCluster".*value<\/span>=<span class="hljs-string">"(.*)"/;
+                    const matchCluster = htmlContent.match(regexForCluser);
+                    const trainerCluster = matchCluster[1]
                     console.log(gameDate);
                     console.log(openTrainerDate);
                     console.log(dateOpenTable);
-                    return [gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate];
+                    console.log(trainerCluster)
+                    return [gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate, trainerNamespace, trainerCluster];
                 }
             }, (results) => {
                 if (results && results[0] && results[0].result) {
