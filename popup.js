@@ -7,7 +7,6 @@ const button5 = document.getElementById('grabBtn5');
 const button6 = document.getElementById('grabBtn6');
 const button7 = document.getElementById('grabBtn7');
 
-
 //Кнопка для Headless
 button.addEventListener('click', function() {
     extractUrlParams(([gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate, trainerNamespace, trainerCluster]) => {
@@ -87,8 +86,6 @@ button4.addEventListener('click', function() {
          });
     });
   });
-
-
   
 // Кнопка мозговых логов на открытие сессии
 button5.addEventListener('click', function() {
@@ -112,7 +109,6 @@ button5.addEventListener('click', function() {
                
                });
         });
-
         
 // Кнопка логов импорта
 button6.addEventListener('click', function() {
@@ -136,7 +132,6 @@ button6.addEventListener('click', function() {
                
                });
         });
-
         
 // Кнопка логов ерроримпорта
 button7.addEventListener('click', function() {
@@ -160,8 +155,6 @@ button7.addEventListener('click', function() {
                
                });
         });
-
-
 
     // Парсинг ссылки в ХИ
     function extractUrlParams(callback) {
