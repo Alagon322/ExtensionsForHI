@@ -1,6 +1,6 @@
 body {
     text-align:center;
-    width: 400px;;
+    width: 550px;;
     height:200px;
     background: white;
 }
@@ -34,6 +34,12 @@ button {
 .brain-buttons{
    flex-basis: 180px; 
 }
+
+.additional-buttons{
+   flex-basis: 180px; 
+}
+
 .create-line{
     margin: 20px;
 }
+

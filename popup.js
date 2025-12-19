@@ -6,6 +6,7 @@ const button4 = document.getElementById('grabBtn4');
 const button5 = document.getElementById('grabBtn5');
 const button6 = document.getElementById('grabBtn6');
 const button7 = document.getElementById('grabBtn7');
+const button8 = document.getElementById('grabBtn8');
 
 //Кнопка для Headless
 button.addEventListener('click', function() {
@@ -156,6 +157,66 @@ button7.addEventListener('click', function() {
                });
         });
 
+
+                
+// кнопка парсинга орлога
+button8.addEventListener('click', function() {
+    extractUrlParams(([gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate, trainerNamespace, trainerCluster, trainerOrlog]) => {
+    
+    
+    // 1. Удаляем строки с RFA и GENSEND
+    let cleanedText = trainerOrlog
+        .replace(/RFA[^;]*;/g, '') // Удаляем RFA с числами
+        .replace(/GENSEND[^;]*;/g, ''); // Удаляем GENSEND и всё до следующей ;
+    
+    // 2. Заменяем оставшиеся точки с запятой на переносы строк
+    let result = cleanedText.replace(/;/g, '\n');
+    
+    // 3. Разбиваем на строки, обрезаем пробелы и фильтруем пустые строки
+    const lines = result
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+    
+    // 4. Объединяем обратно с переносами строк
+    const finalresult = lines.join('\n');
+
+    // Создаем функцию, которая принимает переменную
+    function copyVariableToClipboard(finalresult) {
+    // Проверяем тип переменной
+    if (typeof finalresult !== 'string') {
+    // Если не строка, преобразуем в строку
+     finalresult = String(finalresult);
+     }
+  
+        // Копируем
+        navigator.clipboard.writeText(finalresult)
+        .then(() => {
+         // Показываем уведомление
+        copyStatus.style.display = 'inline';
+        copyStatus.style.color = 'green';
+        // Скрываем через 2 секунды
+        setTimeout(() => {
+            copyStatus.style.display = 'none';
+        }, 2000);
+        })
+        .catch(err => {
+            copyStatus.textContent = '❌ Ошибка';
+            copyStatus.style.color = 'red';
+            copyStatus.style.display = 'inline';
+         setTimeout(() => {
+            copyStatus.style.display = 'none';
+         }, 2000);
+        });
+    }
+
+    // Копируем разные переменные
+    copyVariableToClipboard(finalresult);  // "JohnDoe123"
+
+               });
+        });
+
+
     // Парсинг ссылки в ХИ
     function extractUrlParams(callback) {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
@@ -181,11 +242,14 @@ button7.addEventListener('click', function() {
                     const regexForCluser = /"TrainerCluster".*value<\/span>=<span class="hljs-string">"(.*)"/;
                     const matchCluster = htmlContent.match(regexForCluser);
                     let trainerCluster = matchCluster ? matchCluster[1] : null;
+                    //Регулярка для парсинга орлога
+                    const regexForOrlog = /(START V1[^;]*;[\s\S]*?PreGameOver)/;
+                    const matchOrlog = htmlContent.match(regexForOrlog);
+                    let trainerOrlog = matchOrlog ? matchOrlog[1] : null;
                     console.log(gameDate);
                     console.log(openTrainerDate);
-                    console.log(dateOpenTable);
-                    console.log(trainerNamespace)
-                    return [gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate, trainerNamespace, trainerCluster];
+                    console.log(trainerOrlog);
+                    return [gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate, trainerNamespace, trainerCluster, trainerOrlog];
                 }
             }, (results) => {
                 if (results && results[0] && results[0].result) {
