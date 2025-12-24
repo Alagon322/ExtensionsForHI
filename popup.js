@@ -20,7 +20,7 @@ button.addEventListener('click', function() {
             const dateMinusFive = new Date(gameDate);
             dateMinusFive.setMinutes(dateMinusFive.getMinutes() - 5);
             const newDateMinusFiveString = dateMinusFive.toISOString();
-            if (trainerNamespace == null || trainerCluster == null)
+            if (trainerNamespace == null || trainerCluster == null || trainerCluster == '' || trainerCluster == '')
             // Мега адейт, теперь пространства сам подтягивает
             chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}`});
             else chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=${trainerCluster}&ns=${trainerNamespace}`});
