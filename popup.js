@@ -7,6 +7,7 @@ const button5 = document.getElementById('grabBtn5');
 const button6 = document.getElementById('grabBtn6');
 const button7 = document.getElementById('grabBtn7');
 const button8 = document.getElementById('grabBtn8');
+const button9 = document.getElementById('grabBtn9');
 
 //Кнопка для Headless
 button.addEventListener('click', function() {
@@ -216,6 +217,26 @@ button8.addEventListener('click', function() {
                });
         });
 
+
+        // Кнопка мозговых логов на открытие стола
+  button9.addEventListener('click', function() {
+    extractUrlParams(([gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate]) => {
+         const accIdnumber = Number(accId);
+
+        const datePlusFive = new Date(dateOpenTable);
+        datePlusFive.setMinutes(datePlusFive.getMinutes() + 5);
+        const newDatePlusFiveString = datePlusFive.toISOString();
+        
+        const dateMinusFive = new Date(dateOpenTable);
+        dateMinusFive.setMinutes(dateMinusFive.getMinutes() - 5);
+        const newDateMinusFiveString = dateMinusFive.toISOString();
+
+        chrome.tabs.create({
+                // url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&log=${dateGame}&q=node~eq~${brainServer}&q=component~eq~system&text=${accIdnumber}+${gameId}`
+                url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&q=node~eq~${brainServer}&text=${accIdnumber}&pinned-labels=node&log=${newDateMinusFiveString}&logger=com.gmware.lib.services.axonclient.AxonClient&level=trace`
+         });
+    });
+  });
 
     // Парсинг ссылки в ХИ
     function extractUrlParams(callback) {
