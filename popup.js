@@ -23,8 +23,12 @@ button.addEventListener('click', function() {
             const newDateMinusFiveString = dateMinusFive.toISOString();
             if (trainerNamespace == null || trainerCluster == null || trainerCluster == '' || trainerCluster == '')
             // Мега адейт, теперь пространства сам подтягивает
-            chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}`});
-            else chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=${trainerCluster}&ns=${trainerNamespace}`});
+            //chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}`});
+            //else chrome.tabs.create({url: `https://loggia.ecoinfra.io/?q=AccountId~eq~${accId}&q=HandId~eq~${gameId}&log=&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&az=${trainerCluster}&ns=${trainerNamespace}`});
+            chrome.tabs.create({url: `https://beta.loggia.ecoinfra.io/?pinned-fields=legacy_labels.SessionId&level=info&text=${gameId}&attr=deeplay.account_id~in~${accId}&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}`});
+            else chrome.tabs.create({url: `https://beta.loggia.ecoinfra.io/?pinned-fields=legacy_labels.SessionId&level=info&text=${gameId}&az=${trainerCluster}&ns=${trainerNamespace}&attr=deeplay.account_id~in~${accId}&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}`});
+      
+        
         });
     });
 
@@ -219,7 +223,7 @@ button8.addEventListener('click', function() {
         });
 
 
-        // Кнопка мозговых логов на открытие стола
+        // Axon сборка
   button9.addEventListener('click', function() {
     extractUrlParams(([gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate]) => {
          const accIdnumber = Number(accId);
@@ -233,9 +237,9 @@ button8.addEventListener('click', function() {
         const newDateMinusFiveString = dateMinusFive.toISOString();
 
         chrome.tabs.create({
-                // url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&log=${dateGame}&q=node~eq~${brainServer}&q=component~eq~system&text=${accIdnumber}+${gameId}`
-                url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&q=node~eq~${brainServer}&text=${accIdnumber}&pinned-labels=node&log=${newDateMinusFiveString}&logger=com.gmware.lib.services.axonclient.AxonClient&level=trace`
-         });
+                //url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&q=node~eq~${brainServer}&text=${accIdnumber}&pinned-labels=node&log=${newDateMinusFiveString}&logger=com.gmware.lib.services.axonclient.AxonClient&level=trace`
+                 url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&text=${accIdnumber}&pinned-labels=node&log=${newDateMinusFiveString}&logger=com.gmware.lib.services.axonclient.AxonClient&level=trace`
+            });
     });
   });
 
