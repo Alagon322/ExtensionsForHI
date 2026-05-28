@@ -8,7 +8,7 @@ const button6 = document.getElementById('grabBtn6');
 const button7 = document.getElementById('grabBtn7');
 const button8 = document.getElementById('grabBtn8');
 const button9 = document.getElementById('grabBtn9');
-
+const button10 = document.getElementById('grabBtn10');
 //Кнопка для Headless
 button.addEventListener('click', function() {
     extractUrlParams(([gameId, accId, gameDate, brainServer, dateOpenTable, openTrainerDate, trainerNamespace, trainerCluster]) => {
@@ -286,3 +286,168 @@ button8.addEventListener('click', function() {
             });
         });
     }
+
+
+// кнопка парсинга GIP-команд
+button10.addEventListener('click', function() {
+    extractGipCommands((gipCommands) => {
+
+        function copyVariableToClipboard(value) {
+            if (typeof value !== 'string') {
+                value = String(value);
+            }
+
+            navigator.clipboard.writeText(value)
+                .then(() => {
+                    copyStatus.style.display = 'inline';
+                    copyStatus.style.color = 'green';
+                    setTimeout(() => {
+                        copyStatus.style.display = 'none';
+                    }, 2000);
+                })
+                .catch(err => {
+                    copyStatus.textContent = '❌ Ошибка';
+                    copyStatus.style.color = 'red';
+                    copyStatus.style.display = 'inline';
+                    setTimeout(() => {
+                        copyStatus.style.display = 'none';
+                    }, 2000);
+                });
+        }
+
+        if (!gipCommands) {
+            alert('GIP-команды не найдены');
+            return;
+        }
+
+        copyVariableToClipboard(gipCommands);
+    });
+});
+
+function extractGipCommands(callback) {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        const tabId = tabs[0].id;
+
+        chrome.scripting.executeScript({
+            target: {tabId: tabId},
+            func: () => {
+                const htmlContent = document.documentElement.outerHTML;
+
+                function decodeHtmlEntities(str) {
+                    const txt = document.createElement('textarea');
+                    txt.innerHTML = str;
+                    return txt.value;
+                }
+
+                const regexForCodeBlock = /<code[^>]*>([\s\S]*?)<\/code>/;
+                const matchCodeBlock = htmlContent.match(regexForCodeBlock);
+                let codeBlock = matchCodeBlock ? matchCodeBlock[1] : null;
+
+                if (!codeBlock) {
+                    return null;
+                }
+
+                codeBlock = decodeHtmlEntities(codeBlock)
+                    .replace(/<span[^>]*>/g, '')
+                    .replace(/<\/span>/g, '')
+                    .replace(/\r\n/g, '\n')
+                    .replace(/\r/g, '\n');
+
+                const commandNames = [
+                    'OpenTrainerSession',
+                    'OpenTable',
+                    'GameError',
+                    'Sog',
+                    'Igr',
+                    'IgLog',
+                    'Ga',
+                    'GaBack',
+                    'Eog',
+                    'IngameAnswer'
+                ];
+
+                const lines = codeBlock.split('\n');
+                const result = [];
+
+                function findCommandStart(line) {
+                    for (const commandName of commandNames) {
+                        const regex = new RegExp(`<${commandName}(\\s|>|\\/)`);
+                        if (regex.test(line)) {
+                            return commandName;
+                        }
+                    }
+                    return null;
+                }
+
+                function hasClosingTag(line, commandName) {
+                    return new RegExp(`</${commandName}>`).test(line);
+                }
+
+                function isSelfClosed(line, commandName) {
+                    return new RegExp(`<${commandName}[^>]*\\/\\s*>`).test(line);
+                }
+
+                function trimBeforeCommand(line, commandName) {
+                    const regex = new RegExp(`.*?(<${commandName}(\\s|>|\\/).*)`);
+                    const match = line.match(regex);
+                    return match ? match[1] : line;
+                }
+
+                let currentCommand = null;
+                let currentBlock = [];
+
+                for (const rawLine of lines) {
+                    const line = rawLine.trimEnd();
+                    const startedCommand = findCommandStart(line);
+
+                    // Если встретили новую команду, а старая не закрылась — принудительно сбрасываем старую
+                    if (startedCommand && currentCommand && startedCommand !== currentCommand) {
+                        if (currentBlock.length > 0) {
+                            result.push(currentBlock.join('\n').trim());
+                        }
+                        currentCommand = null;
+                        currentBlock = [];
+                    }
+
+                    if (!currentCommand) {
+                        if (!startedCommand) {
+                            continue;
+                        }
+
+                        currentCommand = startedCommand;
+                        currentBlock = [trimBeforeCommand(line, startedCommand)];
+
+                        if (isSelfClosed(currentBlock[0], currentCommand) || hasClosingTag(currentBlock[0], currentCommand)) {
+                            result.push(currentBlock.join('\n').trim());
+                            currentCommand = null;
+                            currentBlock = [];
+                        }
+
+                        continue;
+                    }
+
+                    currentBlock.push(line);
+
+                    if (hasClosingTag(line, currentCommand)) {
+                        result.push(currentBlock.join('\n').trim());
+                        currentCommand = null;
+                        currentBlock = [];
+                    }
+                }
+
+                if (currentCommand && currentBlock.length > 0) {
+                    result.push(currentBlock.join('\n').trim());
+                }
+
+                return [...new Set(result.filter(Boolean))].join('\n\n');
+            }
+        }, (results) => {
+            if (results && results[0] && results[0].result !== undefined) {
+                callback(results[0].result);
+            } else {
+                console.error('Failed to extract GIP commands');
+                callback(null);
+            }
+        });
+    });
+}
