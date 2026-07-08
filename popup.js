@@ -83,7 +83,7 @@ button3.addEventListener('click', function() {
         const newDateMinusFiveString = dateMinusFive.toISOString();
 
         chrome.tabs.create({
-                url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&text=${accIdnumber}+${gameId}&app=serverapp&q=%40loggia.node%7Eeq%7E${brainServer}&q=%40loggia.extra.app_name%7Eeq%7Eserverapp&view=custom&view-name=Brain_filter&view-wl=%40loggia.node&view-bl=%40loggia.node`
+                url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&text=${accIdnumber}+${gameId}&q=%40loggia.node%7Eeq%7E${brainServer}&view=custom&view-name=Brain_filter&view-wl=%40loggia.node&view-bl=%40loggia.node&logger=com.gmware.applications.server.tools.logs.Gip2Log`
          });
     });
   });
@@ -102,7 +102,7 @@ button4.addEventListener('click', function() {
         const newDateMinusFiveString = dateMinusFive.toISOString();
 
         chrome.tabs.create({
-                url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&text=${accIdnumber}+%3Copentable&app=serverapp&q=%40loggia.extra.app_name%7Eeq%7Eserverapp&view=custom&view-name=Brain_filter&view-wl=%40loggia.node`
+                url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&text=${accIdnumber}+<opentable&view=custom&view-name=Brain_filter&view-wl=%40loggia.node&logger=com.gmware.applications.server.tools.logs.Gip2Log`
       
             });
     });
@@ -123,7 +123,7 @@ button5.addEventListener('click', function() {
                 const newDateMinusFiveString = dateMinusFive.toISOString();
 
                    chrome.tabs.create({
-                url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&text=<OpenTrainerSession+${accIdnumber}&app=serverapp&q=%40loggia.extra.app_name%7Eeq%7Eserverapp&view=custom&view-name=Brain_filter&view-wl=%40loggia.node`
+                url: `https://loggia.ecoinfra.io/?az=brains&ns=brain-platform&from=${newDateMinusFiveString}&to=${newDatePlusFiveString}&text=<OpenTrainerSession+${accIdnumber}&app=serverapp&view=custom&view-name=Brain_filter&view-wl=%40loggia.node&logger=com.gmware.applications.server.tools.logs.Gip2Log`
             });
                
                });
